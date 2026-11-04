@@ -11,6 +11,9 @@ App de finanças pessoais (PWA). Front em `index.html` + `app.js`; funções da 
    cadastre as 7 variáveis do arquivo de chaves e faça **Redeploy**.
 4. **Celular**: abra o link, instale na tela de início, entre na conta e ative as notificações em Ajustes.
 
+## Área da Casa (casal)
+Rode também `supabase-casa.sql` no SQL Editor do Supabase. Ele cria as tabelas da casa, o convite por código e a atualização ao vivo.
+
 ## Lembretes
 `vercel.json` agenda `/api/cron-lembretes` todo dia às 11h UTC (8h em Brasília). No dia 1º vai também o resumo do mês.
 
