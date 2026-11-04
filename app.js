@@ -115,6 +115,7 @@ async function initCloud(){
     try{const r=await fetch("/api/config",{cache:"no-store"}); if(r.ok) c=await r.json(); if(c&&c.supabaseUrl) lsSet("-cfg",JSON.stringify(c))}catch(e){}
     if(!c||!c.supabaseUrl){try{c=JSON.parse(lsGet("-cfg"))}catch(e){c=null}}
     cfg=c;
+    if(cfg&&cfg.supabaseUrl){try{cfg.supabaseUrl=new URL(String(cfg.supabaseUrl).trim()).origin}catch(e){}}
     if(!cfg||!cfg.supabaseUrl||!cfg.supabaseAnonKey||!window.supabase){setSync();return}
     sb=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true}});
     const {data:{session}}=await sb.auth.getSession(); sess=session;
