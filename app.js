@@ -9,6 +9,7 @@ const lsGet=k=>{try{return localStorage.getItem(LS+k)}catch(e){return null}};
 const lsSet=(k,v)=>{try{if(v==null) localStorage.removeItem(LS+k); else localStorage.setItem(LS+k,v)}catch(e){}};
 let oculto=lsGet("-oculto")==="1";
 const brl=v=>oculto?"R$ •••":(v<0?"-":"")+"R$ "+Math.abs(v).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+const money=v=>{if(oculto) return `<span class="cur">R$</span>•••`; const [i,c]=Math.abs(v).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}).split(","); return `<span class="cur">${v<0?"-":""}R$</span>${i}<span class="cts">,${c}</span>`};
 const brl0=v=>oculto?"R$ •••":(v<0?"-":"")+"R$ "+Math.abs(Math.round(v)).toLocaleString("pt-BR");
 const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
 const r2=v=>Math.round(v*100)/100;
@@ -130,6 +131,17 @@ async function initCloud(){
 }
 window.addEventListener("online",()=>{if(dirty) pushCloud()});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&sess&&!dirty) pullCloud()});
+
+/* ================= tema ================= */
+let tema=lsGet("-tema")||"auto";
+const escuroAgora=()=>tema==="escuro"||(tema==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);
+function aplicarTema(){
+  const r=document.documentElement;
+  if(tema==="claro") r.setAttribute("data-theme","light"); else if(tema==="escuro") r.setAttribute("data-theme","dark"); else r.removeAttribute("data-theme");
+  const m=document.getElementById("metaTheme"); if(m) m.setAttribute("content",escuroAgora()?"#0A0C11":"#F4F3EF");
+}
+try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(tema==="auto"){aplicarTema();render()}})}catch(e){}
+aplicarTema();
 
 /* ================= cálculos ================= */
 const isCur=()=>VK===MK;
@@ -274,8 +286,8 @@ function renderNav(){
     +`<button class="tab" data-act="mais" ${MAIS.includes(route)?'aria-current="page"':""}>${icon("i-more")}Mais</button>`;
 }
 function go(r){route=r; selMode=false; sel.clear(); closeSheet(); try{history.replaceState(null,"","#"+r)}catch(e){} render(); const m=$("main"); if(m) m.scrollTo({top:0})}
-window.addEventListener("hashchange",()=>{const h=location.hash.slice(1); if(h&&h!==route){route=h;closeSheet();selMode=false;sel.clear();render()}});
-{const h=location.hash.slice(1); if(["inicio","contas","lancamentos","metas","relatorio","ajustes","empresa"].includes(h)) route=h;}
+window.addEventListener("hashchange",()=>{const h=location.hash.slice(1); if(h==="novo"){go("inicio"); sheetLanc(); return} if(h&&h!==route){route=h;closeSheet();selMode=false;sel.clear();render()}});
+{const h=location.hash.slice(1); if(h==="novo") setTimeout(()=>{if(!locked) sheetLanc()},300); if(["inicio","contas","lancamentos","metas","relatorio","ajustes","empresa"].includes(h)) route=h;}
 
 /* ================= componentes ================= */
 function monthSwitch(){
@@ -283,9 +295,10 @@ function monthSwitch(){
 }
 function topBar(title,sub,meses=true){
   const n=alerts().length;
-  return `<div class="top"><div style="min-width:0"><h1>${title}</h1><p>${sub}</p></div><div class="top-actions">
+  return `<div class="top"><div class="hello">${title.startsWith("Bom")||title.startsWith("Boa")?`<span class="avatar" aria-hidden="true">M</span>`:""}<div style="min-width:0"><h1>${title}</h1><p>${sub}</p></div></div><div class="top-actions">
   ${meses?monthSwitch():""}
   <button class="btn btn-primary" data-act="novo">${icon("i-plus")}Novo</button>
+  <button class="icon-btn" data-act="tema" aria-label="Tema: ${tema==="auto"?"automático":tema}">${icon(tema==="auto"?"i-auto":tema==="escuro"?"i-moon":"i-sun")}</button>
   <button class="icon-btn" data-act="olho" aria-label="${oculto?"Mostrar valores":"Esconder valores"}">${icon(oculto?"i-eyeoff":"i-eye")}</button>
   <button class="icon-btn" data-act="notif" aria-label="Avisos">${icon("i-bell")}${n?`<span class="badge">${n}</span>`:""}</button></div></div>`;
 }
@@ -303,7 +316,7 @@ function vault(){
   const past=VK<MK;
   return `<section class="vault" aria-label="Resumo do mês"><div style="position:relative;z-index:1">
     <div class="v-label">${past?"Sobrou em ":"Livre para "}${keyLabel(VK)}</div>
-    <div class="v-big ${T.livre<0?"neg":""}">${brl(T.livre)}</div>
+    <div class="v-big ${T.livre<0?"neg":""}">${money(T.livre)}</div>
     <div class="v-sub">${past?`Entraram <b>${brl(T.rendaRef)}</b>, saíram <b>${brl(T.gasto)}</b> e você guardou <b>${brl(T.guardado)}</b>.`:`Já descontando <b>${brl(T.aPagar)}</b> em contas a pagar e <b>${brl(T.guardado)}</b> guardados.`}</div>
     <div class="meter"><div class="meter-row"><span>Limite do mês</span><span><b>${brl0(T.gasto+T.aPagar)}</b> de ${brl0(T.limite)} · ${oculto?"•••":pct+"%"}</span></div>
     <div class="track"><div class="fill ${cls}" style="width:${pct}%"></div></div></div></div>
@@ -455,7 +468,7 @@ function vEmpresa(){
   return topBar("Empréstimos empresa",`Descontados no dia ${fd} · salário de ${brl0(e.salario)}`)+
   `<section class="vault emp-hero" aria-label="Resumo da empresa"><div style="position:relative;z-index:1">
     <div class="v-label">${passou30?"Você recebeu no dia "+fd:"Você recebe no dia "+fd}</div>
-    <div class="v-big ${R.deve?"neg":""}">${brl(R.receber)}</div>
+    <div class="v-big ${R.deve?"neg":""}">${money(R.receber)}</div>
     <div class="v-sub">${R.deve?`<b style="color:#F38A7E">Os empréstimos passaram ${brl(R.deve)} do valor do dia ${fd}.</b> Essa diferença será descontada no próximo mês.`:`${brl(R.base)} menos <b>${brl(R.pego+R.carry)}</b> em empréstimos${R.carry?` (inclui ${brl(R.carry)} do mês anterior)`:""}.`}</div>
     <div class="meter"><div class="meter-row"><span>Já pego do dia ${fd}</span><span><b>${brl0(R.pego+R.carry)}</b> de ${brl0(R.base)} · ${oculto?"•••":pct+"%"}</span></div><div class="track"><div class="fill ${cls}" style="width:${pct}%"></div></div></div></div>
     <div class="v-stats">
@@ -487,6 +500,8 @@ function vAjustes(){
   ${!sb?`<p class="hint" style="margin:0">A nuvem ainda não foi configurada neste site. Seus dados ficam só neste aparelho. Faça backup de vez em quando.</p>`
     :sess?`<p style="margin:0">Conectado como <b>${esc(sess.user.email)}</b>. Seus dados ficam salvos na nuvem e aparecem em qualquer aparelho em que você entrar.</p><div><button class="btn btn-ghost" data-act="sair">Sair da conta</button></div>`
     :`<p class="hint" style="margin:0">Entre para salvar na nuvem, usar em mais de um aparelho e receber lembretes com o app fechado.</p><div><button class="btn btn-primary" data-act="login">Entrar ou criar conta</button></div>`}</section>
+  <section class="card"><h2 style="font-size:17px">Aparência</h2><p class="hint" style="margin:0">No automático, o app acompanha o tema do seu celular.</p>
+  <div class="theme-seg" role="group" aria-label="Tema">${[["auto","Automático","i-auto"],["claro","Claro","i-sun"],["escuro","Escuro","i-moon"]].map(([k,t,i])=>`<button data-tema="${k}" aria-pressed="${tema===k}">${icon(i)}${t}</button>`).join("")}</div></section>
   <section class="card"><form id="cfgForm" style="display:flex;flex-direction:column;gap:14px"><h2 style="font-size:17px">Renda e limites</h2>
   <div class="row"><div class="field"><label for="cRenda">Renda mensal esperada</label><input id="cRenda" inputmode="decimal" value="${c.renda||""}" placeholder="Ex.: 5000"></div>
   <div class="field"><label for="cLim">Limite de gastos do mês</label><input id="cLim" inputmode="decimal" value="${c.limite||""}" placeholder="Ex.: 3500"></div></div>
@@ -880,7 +895,7 @@ function maybeResumo(){
 /* ================= eventos ================= */
 document.addEventListener("click",async e=>{
   const key=e.target.closest("[data-key]"); if(key){keyPress(key.dataset.key);return}
-  const el=e.target.closest("[data-go],[data-act],[data-pay],[data-deltx],[data-filter],[data-chip],[data-quick],[data-undo],[data-opt],[data-editbill],[data-delbill],[data-deposit],[data-withdraw],[data-delgoal],[data-close],[data-mes],[data-cview],[data-calday],[data-delrec],[data-mode],[data-edittx],[data-editemp],[data-empv]");
+  const el=e.target.closest("[data-go],[data-act],[data-pay],[data-deltx],[data-filter],[data-chip],[data-quick],[data-undo],[data-opt],[data-editbill],[data-delbill],[data-deposit],[data-withdraw],[data-delgoal],[data-close],[data-mes],[data-cview],[data-calday],[data-delrec],[data-mode],[data-edittx],[data-editemp],[data-empv],[data-tema]");
   if(!el){ if(notifOpen&&!e.target.closest(".notif-panel")){notifOpen=false;document.querySelector(".notif-panel")?.remove()} return }
   if(el.dataset.close&&e.target!==el) return;
   const d=el.dataset;
@@ -893,6 +908,7 @@ document.addEventListener("click",async e=>{
   if(d.undo){if(d.undo==="snap") restoreSnap(); else {removeTx(d.undo); persist(); render()} document.querySelector(".toast")?.remove(); return}
   if(d.edittx){ if(selMode){sel.has(d.edittx)?sel.delete(d.edittx):sel.add(d.edittx); render(); return} return sheetEditTx(d.edittx)}
   if(d.editemp) return sheetEditEmp(d.editemp);
+  if(d.tema){tema=d.tema; lsSet("-tema",tema==="auto"?null:tema); aplicarTema(); render(); return}
   if(d.empv){const i=$("#eVal"); i.value=d.empv; i.focus(); return}
   if(d.pay) return togglePay(d.pay);
   if(d.filter){lancFilter=d.filter; render(); return}
@@ -909,6 +925,7 @@ document.addEventListener("click",async e=>{
   switch(d.act){
     case "novo": return sheetLanc();
     case "mais": return sheetMais();
+    case "tema": {const seq=["auto","claro","escuro"]; tema=seq[(seq.indexOf(tema)+1)%3]; lsSet("-tema",tema==="auto"?null:tema); aplicarTema(); render(); toast(`Tema ${tema==="auto"?"automático (segue o celular)":tema}.`); return}
     case "empcfg": return sheetEmpCfg();
     case "selon": selMode=true; sel.clear(); render(); return;
     case "selsair": selMode=false; sel.clear(); render(); return;
@@ -1031,6 +1048,7 @@ if("serviceWorker" in navigator) window.addEventListener("load",()=>navigator.se
 
 /* ================= início ================= */
 runRecurring();
+if(location.hash==="#novo"){route="inicio"; try{history.replaceState(null,"","#inicio")}catch(e){}}
 render();
 if(lsGet("-pin")) lockNow();
 initCloud().then(()=>{ if(!locked&&(!sb||sess||lsGet("-semconta"))) maybeResumo(); checkNotify() });
