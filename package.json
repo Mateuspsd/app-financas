@@ -1,0 +1,10 @@
+{
+  "name": "prumo-financas",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "@supabase/supabase-js": "2.49.4",
+    "web-push": "3.6.7"
+  }
+}
