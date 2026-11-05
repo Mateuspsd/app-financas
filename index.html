@@ -520,6 +520,44 @@ body{background:var(--bg);color:var(--ink);letter-spacing:-.005em;transition:bac
 .casa-cod{font-family:ui-monospace,Menlo,monospace;letter-spacing:.18em;color:var(--gold-2);font-size:1.05em}
 .card .casa-cod{color:var(--gold)}
 @media (max-width:560px){.s52{grid-template-columns:repeat(9,minmax(0,1fr))}.d-grid b{font-size:14px}.prev .prev-v{font-size:19px}}
+/* ================= v7 · personalizar ================= */
+.plist{display:flex;flex-direction:column}
+.prow{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line-2)}
+.prow:last-child{border-bottom:0}
+.prow.dim{opacity:.5}
+.p-ic{width:22px;height:22px;color:var(--accent);flex:none}
+.p-tx{display:flex;flex-direction:column;min-width:0;flex:1}
+.p-tx b{font-weight:500;font-size:14.5px}
+.p-tx small{color:var(--ink-3);font-size:12.5px;overflow-wrap:anywhere}
+.sw{position:relative;width:48px;height:28px;flex:none;cursor:pointer}
+.sw input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer;z-index:1;width:100%;height:100%}
+.sw span{position:absolute;inset:0;border-radius:100px;background:var(--line);transition:background-color .2s}
+.sw span::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.sw input:checked+span{background:var(--accent)}
+.sw input:checked+span::after{transform:translateX(20px)}
+.sw input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.ord{display:flex;flex-direction:column;gap:2px}
+.ord button{border:0;background:var(--surface-2);width:30px;height:22px;border-radius:7px;display:grid;place-items:center;color:var(--ink-2);padding:0}
+.ord button svg{width:15px;height:15px}
+.ord button:disabled{opacity:.3}
+.slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.addrow{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1.4fr) minmax(0,1fr) auto;gap:10px;align-items:end;padding-top:6px;border-top:1px dashed var(--line)}
+.addrow .btn{height:46px}
+.chip.c-nec{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.chip.c-nao{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.icon-btn.sm{width:34px;height:34px}
+.icon-btn.sm svg{width:16px;height:16px}
+.atal{display:inline-flex;align-items:center;gap:6px}
+.atal button{border:0;background:none;color:inherit;font-size:16px;line-height:1;padding:0 2px;cursor:pointer}
+.chip-at{border-color:var(--gold);color:var(--gold);background:var(--gold-soft);font-weight:500}
+.aba-ic{background:color-mix(in srgb,var(--ac,var(--accent)) 16%,transparent)!important;color:var(--ac,var(--accent))!important}
+.aba-hero{background:radial-gradient(120% 140% at 100% 0%,color-mix(in srgb,var(--ac) 35%,transparent) 0%,transparent 50%),linear-gradient(160deg,var(--vault-2),var(--vault))}
+.goal-line{display:grid;grid-template-columns:1fr auto;gap:6px;font-size:14px;padding:6px 0}
+.goal-line b{color:var(--gold);font-weight:600}
+.pers-cta{flex-direction:row;align-items:center;gap:12px;text-align:left;font:inherit;color:inherit;cursor:pointer;padding:16px;border:1px solid color-mix(in srgb,var(--gold) 40%,var(--line))!important;background:linear-gradient(135deg,var(--gold-soft),var(--surface) 70%)}
+.opt.ico{width:42px;height:42px;padding:0;display:grid;place-items:center;border-radius:12px}
+.opt.ico svg{width:20px;height:20px}
+@media (max-width:640px){.slots{grid-template-columns:1fr}.addrow{grid-template-columns:1fr 1fr}.addrow .field:first-child{grid-column:1/-1}.addrow .btn{grid-column:1/-1;justify-content:center}}
 </style>
 </head>
 <body>
@@ -537,6 +575,13 @@ body{background:var(--bg);color:var(--ink);letter-spacing:-.005em;transition:bac
   <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></symbol>
   <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.5A8.4 8.4 0 1 1 21 11.5z"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16h14M6 16l1.5-5h9L18 16M4 16v3h3v-3M17 16v3h3v-3"/><circle cx="8" cy="13.5" r=".5"/><circle cx="16" cy="13.5" r=".5"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12M12 8S10 3 7.5 4.5 9 8 12 8zm0 0s2-5 4.5-3.5S15 8 12 8z"/></symbol>
   <symbol id="i-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></symbol>
   <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11h14V9"/><circle cx="9.5" cy="13" r="1.6"/><circle cx="14.5" cy="13" r="1.6"/><path d="M7 18c.6-1.5 1.5-2.2 2.5-2.2s1.9.7 2.5 2.2M12 18c.6-1.5 1.5-2.2 2.5-2.2s1.9.7 2.5 2.2"/></symbol>
   <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></symbol>
@@ -573,6 +618,6 @@ body{background:var(--bg);color:var(--ink);letter-spacing:-.005em;transition:bac
 <div id="lock"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
-<script src="/app.js?v=6"></script>
+<script src="/app.js?v=7"></script>
 </body>
 </html>
